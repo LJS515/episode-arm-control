@@ -1,0 +1,34 @@
+# Parameters of episode_robot_interface. Joint limits MUST equal
+# config/joint_limits.yaml (checked by tools/validate_configuration.py).
+episode_robot_interface:
+  ros__parameters:
+    backend: vendor_tcp            # mock | vendor_tcp
+    host: 127.0.0.1
+    port: 12345
+    legacy_compatible: true
+    read_timeout_s: 0.3            # must be < stale_after_s
+    joint_names: [joint1, joint2, joint3, joint4, joint5, joint6]
+    # ros_model mapping (evidence B): joint = motor - offset, all signs +1
+    # (official robot_interface_node.py; official URDF limits agree)
+    mapping_signs: [1, 1, 1, 1, 1, 1]
+    mapping_offsets_deg: [180.0, 90.0, 83.0, 30.0, 110.0, 30.0]
+    joint_lower_deg: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    joint_upper_deg: [340.0, 180.0, 163.0, 335.0, 220.0, 335.0]
+    poll_rate_hz: 20.0
+    stale_after_s: 0.5
+    waypoint_min_spacing_deg: 5.0
+    assume_vendor_homed: false     # true only if an operator verified the official server homed
+    action_name: episode_arm_controller/follow_joint_trajectory
+
+episode_diagnostics:
+  ros__parameters:
+    expected_rate_hz: 20.0
+    stale_after_s: 0.5
+    min_rate_ratio: 0.5
+
+episode_mock_hardware:
+  ros__parameters:
+    host: 127.0.0.1
+    port: 12345
+    mode: legacy
+    homed: true

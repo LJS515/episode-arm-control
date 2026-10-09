@@ -1,0 +1,53 @@
+%% Episode Arm Control — system architecture
+%% Grey = official/vendor (not our work). Blue = this project. Dashed = not yet verified on hardware.
+flowchart TB
+    subgraph USER["Callers"]
+        APP["Python app / examples"]
+        MOVEIT["MoveIt 2 / ROS2 clients"]
+    end
+
+    subgraph OURS["Episode Arm Control"]
+        direction TB
+        ROSNODE["episode_ros2<br/>robot_interface_node<br/>Action / Services / Topics"]
+        R2C["episode_ros2_control<br/>SystemInterface (Jazzy, Mock-tested)"]
+        subgraph CORE["episode_hardware — SafeRobotController"]
+            SUP["SafetySupervisor"]
+            ARB["CommandArbiter<br/>single motion owner"]
+            SM["RobotStateMachine<br/>8 states"]
+            CACHE["JointStateCache<br/>timestamps + staleness"]
+            MON["TrajectoryMonitor<br/>desired / actual / error"]
+            MAP["JointMapping<br/>motor ↔ model"]
+        end
+        SDK["episode_sdk.EpisodeClient<br/>recv_exact · timeouts · validation"]
+        MOCK["MockEpisodeServer / SimulatedArm<br/>fault injection"]
+    end
+
+    subgraph VENDOR["Official / purchased (NOT our work)"]
+        UPPER["Official Windows upper computer<br/>TCP JSON server, IK"]
+        CORELIB["episode_controller + episode_controller_core<br/>(compiled, ROS2 route)"]
+        PCAN["PEAK PCAN / USB2CAN"]
+        BUS(("CAN bus"))
+        DRV["6 × closed-loop FOC stepper drivers<br/>(ZDT, fw V5.1.5D)"]
+        GRIP["Gripper node STM32<br/>pump / servo"]
+        MECH["Mechanics: steppers, planetary gearboxes, belt J5"]
+    end
+
+    APP --> SDK
+    MOVEIT --> ROSNODE
+    MOVEIT -.-> R2C
+    ROSNODE --> CORE
+    CORE --> SDK
+    R2C -.->|vendor_tcp backend| UPPER
+    SDK -->|"8-byte BE length + UTF-8 JSON"| UPPER
+    SDK -.->|tests| MOCK
+    UPPER --> PCAN
+    CORELIB --> PCAN
+    PCAN --> BUS
+    BUS --> DRV
+    BUS --> GRIP
+    DRV --> MECH
+
+    classDef vendor fill:#e5e7eb,stroke:#6b7280,color:#111;
+    classDef ours fill:#dbeafe,stroke:#2563eb,color:#111;
+    class UPPER,CORELIB,PCAN,BUS,DRV,GRIP,MECH vendor;
+    class ROSNODE,R2C,SUP,ARB,SM,CACHE,MON,MAP,SDK,MOCK ours;

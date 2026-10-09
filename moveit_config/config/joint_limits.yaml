@@ -1,0 +1,20 @@
+# MoveIt time-parameterisation limits, model radians.
+#
+# RULE (learned in the first MoveIt run): planned velocities must not exceed what
+# the execution backend can actually do. With max_velocity 0.8 rad/s on joint5,
+# JTC aborted with "State tolerances failed for joint 5" because the mock backend
+# at the commissioning speed_ratio 0.3 only moves ~0.31 rad/s (60 deg/s x 0.3).
+#
+# Values below are sized for that mock capability (0.25 rad/s < 0.31 rad/s).
+# Real joint speed/acceleration limits are TBD (待真机测量) and must be measured
+# before these numbers are raised.
+default_velocity_scaling_factor: 0.5
+default_acceleration_scaling_factor: 0.5
+
+joint_limits:
+  joint1: {has_velocity_limits: true, max_velocity: 0.25, has_acceleration_limits: true, max_acceleration: 0.5}
+  joint2: {has_velocity_limits: true, max_velocity: 0.25, has_acceleration_limits: true, max_acceleration: 0.5}
+  joint3: {has_velocity_limits: true, max_velocity: 0.25, has_acceleration_limits: true, max_acceleration: 0.5}
+  joint4: {has_velocity_limits: true, max_velocity: 0.25, has_acceleration_limits: true, max_acceleration: 0.5}
+  joint5: {has_velocity_limits: true, max_velocity: 0.25, has_acceleration_limits: true, max_acceleration: 0.5}
+  joint6: {has_velocity_limits: true, max_velocity: 0.25, has_acceleration_limits: true, max_acceleration: 0.5}

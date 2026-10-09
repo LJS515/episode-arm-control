@@ -1,0 +1,10 @@
+* text=auto
+*.py text eol=lf
+*.sh text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+*.xml text eol=lf
+*.xacro text eol=lf
+*.srdf text eol=lf
+*.mmd text eol=lf
+*.md text eol=lf

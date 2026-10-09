@@ -1,0 +1,4 @@
+# Runtime dependencies of episode_sdk / episode_hardware.
+# Pure-Python core: the SDK, safety layer and mock need only the standard library;
+# PyYAML is used to load config/*.yaml.
+PyYAML>=6.0

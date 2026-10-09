@@ -1,0 +1,27 @@
+%% Fault detection and reaction
+flowchart TD
+    A["poll_once()"] --> B{"read ok?"}
+    B -- no --> C["cache.update_failure()<br/>consecutive_failures++"]
+    B -- "partial (None)" --> C2["sample invalid<br/>counts as failure"]
+    B -- yes --> D["cache.update_success()"]
+    C --> E{"failures ≥ 3?"}
+    C2 --> E
+    E -- yes --> F["latch READ_FAILURES"]
+    D --> G{"moving and stale?"}
+    G -- yes --> F2["latch STALE_DURING_MOTION"]
+    D --> H{"position outside range ± tol?"}
+    H -- yes --> F3["latch POSITION_OUT_OF_RANGE"]
+    D --> I["TrajectoryMonitor.update()"]
+    I --> J{"verdict"}
+    J -- TIMED_OUT --> F4["latch MOTION_TIMEOUT"]
+    J -- FINAL_ERROR_EXCEEDED --> F5["latch FINAL_ERROR_EXCEEDED"]
+    J -- SUCCEEDED --> K["MOTION_DONE → READY"]
+    F & F2 & F3 & F4 & F5 --> L["StateMachine → FAULT (latched)"]
+    L --> M{"motion active?"}
+    M -- yes --> N{"soft stop supported?"}
+    N -- yes --> O["soft_stop()"]
+    N -- no --> P["emergency_stop() → ESTOP"]
+    L --> Q["operator: clear_fault()"]
+    Q --> R{"ack + fresh + 0 failures?"}
+    R -- yes --> S["INACTIVE (re-activate / re-home)"]
+    R -- no --> L

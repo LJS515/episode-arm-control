@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<!--
+  ros2_control block for the Episode 1 arm. Include it from the official URDF/xacro
+  (the official ROS2 package ships URDF/SDF/STL; joint names here must match it).
+  STATUS: reference, pending verification in ROS2 Jazzy.
+
+  Usage:
+    <xacro:include filename="$(find episode_ros2_control)/urdf/episode_ros2_control.xacro"/>
+    <xacro:episode_ros2_control name="Episode1System" backend="mock"/>
+-->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:macro name="episode_ros2_control"
+               params="name backend:=mock host:=127.0.0.1 port:=12345 prefix:=''">
+    <ros2_control name="${name}" type="system">
+      <hardware>
+        <plugin>episode_ros2_control/EpisodeSystemHardware</plugin>
+        <param name="backend">${backend}</param>
+        <param name="host">${host}</param>
+        <param name="port">${port}</param>
+        <param name="timeout_ms">300</param>
+        <!-- ros_model mapping (evidence B): joint = motor - offset, all signs +1 -->
+        <param name="mapping_signs">1,1,1,1,1,1</param>
+        <param name="mapping_offsets_deg">180,90,83,30,110,30</param>
+        <!-- motor-degree limits, evidence B -->
+        <param name="joint_lower_deg">0,0,0,0,0,0</param>
+        <param name="joint_upper_deg">340,180,163,335,220,335</param>
+        <param name="soft_margin_deg">2.0</param>
+        <param name="stale_after_s">0.5</param>
+        <param name="poll_rate_hz">20</param>
+        <param name="command_deadband_deg">0.2</param>
+        <param name="min_command_interval_s">0.1</param>
+        <param name="speed_ratio">0.3</param>
+      </hardware>
+      <xacro:macro name="episode_joint" params="jname">
+        <joint name="${prefix}${jname}">
+          <command_interface name="position"/>
+          <state_interface name="position"/>
+          <state_interface name="velocity"/>
+        </joint>
+      </xacro:macro>
+      <xacro:episode_joint jname="joint1"/>
+      <xacro:episode_joint jname="joint2"/>
+      <xacro:episode_joint jname="joint3"/>
+      <xacro:episode_joint jname="joint4"/>
+      <xacro:episode_joint jname="joint5"/>
+      <xacro:episode_joint jname="joint6"/>
+    </ros2_control>
+  </xacro:macro>
+</robot>

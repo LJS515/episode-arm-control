@@ -1,0 +1,22 @@
+# PROPOSAL (not built): Cartesian move through the official IK.
+# Goal
+geometry_msgs/Pose target        # flange pose in base frame, metres
+bool linear                      # false = MoveJ via IK, true = MoveL
+float64 speed_ratio              # 0 < r <= cap
+---
+# Result
+int32 SUCCESS=0
+int32 NO_SOLUTION=1
+int32 REJECTED=2
+int32 TIMEOUT=3
+int32 CANCELED=4
+int32 FAULT=5
+int32 code
+string message
+float64[] final_joint_positions  # measured, model radians
+---
+# Feedback
+string state                     # MOVING / STOPPING / ...
+float64[] actual_joint_positions # measured, model radians
+float64 elapsed_s
+float64 estimated_duration_s     # from the official server (estimate only)

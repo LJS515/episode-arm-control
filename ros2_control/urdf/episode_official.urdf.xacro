@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!--
+  Official Episode 1 model + this project's ros2_control block.
+
+  The robot model (links, joints, STL meshes) comes unchanged from the OFFICIAL
+  package `episode1_urdf_1113` (student_ros V1.0, enpeicv download centre,
+  evidence B). That package is NOT redistributed in this repository: download
+  it from the official site and put src/episode1_urdf_1113 into your colcon
+  workspace. Notes on the official URDF: joint <limit velocity="0" effort="0">
+  (MoveIt needs joint_limits.yaml), collision meshes reuse the visual STLs,
+  joint names joint1..joint6, root link base_link.
+-->
+<robot name="episode1_urdf_1113" xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:arg name="backend" default="mock"/>
+  <xacro:arg name="host" default="127.0.0.1"/>
+  <xacro:arg name="port" default="12345"/>
+
+  <xacro:include filename="$(find episode1_urdf_1113)/urdf/episode1_urdf_1113.urdf"/>
+  <xacro:include filename="$(find episode_ros2_control)/urdf/episode_ros2_control.xacro"/>
+
+  <xacro:episode_ros2_control name="Episode1System" backend="$(arg backend)" host="$(arg host)" port="$(arg port)"/>
+</robot>

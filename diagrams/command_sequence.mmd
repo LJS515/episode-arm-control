@@ -1,0 +1,27 @@
+%% One joint move through the safety layer
+sequenceDiagram
+    autonumber
+    participant C as Caller (ROS action / app)
+    participant SV as SafetySupervisor
+    participant AR as CommandArbiter
+    participant SM as StateMachine
+    participant HW as RobotHardware (hardware_lock)
+    participant P as poll_once (20 Hz)
+    participant M as TrajectoryMonitor
+
+    C->>SV: move_joints(q, r)
+    SV->>SV: READY? homed? no fault? feedback fresh & complete?<br/>limits − margin? 0<r≤1? step ≤ max?
+    SV-->>C: reject (NotHomed / Stale / JointLimit / ...)
+    SV->>AR: submit(kind, source, priority, timeout)
+    AR-->>C: CommandRejected (busy) / queued / ACTIVE ticket
+    AR->>SM: MOTION_START
+    SM->>HW: command_joint_positions(q, r)
+    HW-->>SM: estimated duration
+    SM->>M: start(start, goal, expected, tol, settle, timeout)
+    loop every poll
+        P->>HW: read_joint_positions()
+        P->>SV: evaluate() (read failures, stale, range)
+        P->>M: update(actual, stamp)
+    end
+    M-->>AR: SUCCEEDED → complete(ok) → SM MOTION_DONE
+    M-->>SV: TIMED_OUT / FINAL_ERROR_EXCEEDED → latch fault → SM FAULT → stop

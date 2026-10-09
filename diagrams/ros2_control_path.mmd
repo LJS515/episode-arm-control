@@ -1,0 +1,20 @@
+%% Route B (official ROS2) vs. this project's ROS2 options
+flowchart LR
+    subgraph OFFICIAL["Official route B (vendor)"]
+        MI["MoveIt 2"] --> OA["episode_controller node<br/>FollowJointTrajectory / AngleMode /<br/>MoveXyzRotation / LinearMove"]
+        OA --> OC["episode_controller_core (.so)<br/>+ IK library (.so)"]
+        OC --> PC["PCAN"] --> CAN(("CAN")) --> DR["drivers"]
+    end
+
+    subgraph OPT1["Option 1 — implemented (Python, run in Jazzy with Mock)"]
+        MI2["MoveIt 2 / clients"] --> RN["episode_ros2<br/>robot_interface_node"]
+        RN --> SC["SafeRobotController"]
+        SC --> VA["VendorTcpAdapter"] --> UP["Official upper computer (route A)"]
+    end
+
+    subgraph OPT2["Option 2 — C++ (built + run in Jazzy with Mock)"]
+        CM["controller_manager<br/>JTC + JSB"] --> SI["EpisodeSystemHardware<br/>read()/write()"]
+        SI --> MB["MockBackend"]
+        SI --> TB["VendorTcpBackend"] --> UP2["Official upper computer"]
+        SI -.-> CB["VendorCoreBackend<br/>(placeholder: core API not public)"]
+    end

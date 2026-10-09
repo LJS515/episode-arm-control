@@ -1,0 +1,31 @@
+protocol:
+  host: 127.0.0.1
+  port: 12345                 # default of historical 0.server.py (C); some demos use 3001
+  legacy_compatible: true     # send only {"action","params"}
+  connection_policy: per_command   # per_command | persistent
+  max_message_size: 1048576
+  protocol_version: "1.0"     # only used in enhanced mode
+  timeouts:
+    connect_s: 2.0
+    send_s: 2.0
+    receive_s: 5.0
+    command_total_s: 10.0
+  retry:
+    max_attempts: 3           # idempotent reads only; motion never retried
+    initial_backoff_s: 0.05
+  # action name -> evidence; params format
+  actions:
+    emergency_stop:            {evidence: B, params: "null (E)"}
+    home:                      {evidence: C, params: "null"}
+    angle_mode:                {evidence: "B/C", params: "[[q1..q6 motor deg], speed_ratio]"}
+    move_xyz_rotation:         {evidence: "B/C", params: "[x,y,z,r1,r2,r3,order]"}
+    move_linear_xyz_rotation:  {evidence: "B/C", params: "[x,y,z,r1,r2,r3,order]"}
+    dynamic_move:              {evidence: B, params: "TBD (E) — SDK sends [[q1..q6]] or [[q1..q6], speed_ratio]"}
+    get_motor_angles:          {evidence: "B/C", params: "null -> [6 x float|null]"}
+    get_T:                     {evidence: B, params: "null -> 4x4 (format E)"}
+    get_pose:                  {evidence: B, params: "null -> [x,y,z,rx,ry,rz] (format E)"}
+    gripper_on:                {evidence: "B/C", params: "null"}
+    gripper_off:               {evidence: "B/C", params: "null"}
+    servo_gripper:             {evidence: "B/C", params: "angle deg (range E)"}
+    set_free_mode:             {evidence: "B/C", params: "0|1"}
+    robodk_simu:               {evidence: "B/C", params: "0|1"}

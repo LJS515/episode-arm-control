@@ -1,0 +1,26 @@
+%% RobotStateMachine — episode_hardware/state_machine.py (tested: tests/test_state_machine.py)
+stateDiagram-v2
+    [*] --> UNCONFIGURED
+    UNCONFIGURED --> INACTIVE: CONFIGURE
+    INACTIVE --> HOMING: START_HOMING
+    INACTIVE --> READY: ACTIVATE [homed]
+    INACTIVE --> UNCONFIGURED: SHUTDOWN
+    HOMING --> READY: HOMING_DONE
+    HOMING --> FAULT: HOMING_FAILED
+    HOMING --> STOPPING: STOP_REQUEST
+    READY --> MOVING: MOTION_START [homed, no fault]
+    READY --> INACTIVE: DEACTIVATE
+    READY --> HOMING: START_HOMING
+    MOVING --> READY: MOTION_DONE
+    MOVING --> STOPPING: STOP_REQUEST
+    STOPPING --> READY: STOP_DONE
+    INACTIVE --> FAULT: FAULT
+    READY --> FAULT: FAULT
+    MOVING --> FAULT: FAULT
+    STOPPING --> FAULT: FAULT
+    FAULT --> INACTIVE: CLEAR_FAULT [operator ack, fresh feedback, 0 read failures]
+    ESTOP --> INACTIVE: RELEASE_ESTOP [operator, re-home required]
+    note right of ESTOP
+        ESTOP is accepted from EVERY state
+        (edges omitted for readability)
+    end note

@@ -1,0 +1,30 @@
+%% Test architecture — what is verified where
+flowchart LR
+    subgraph UNIT["Unit (no network)"]
+        T1["test_validation"]
+        T2["test_joint_mapping<br/>(incl. FK/IK)"]
+        T3["test_state_cache"]
+        T4["test_state_machine"]
+        T5["test_command_arbiter<br/>(threads)"]
+        T6["test_safety_supervisor"]
+        T7["test_trajectory_monitor"]
+    end
+    subgraph PROTO["Protocol (socketpair)"]
+        T8["test_protocol<br/>fragments, truncation, NaN, oversize"]
+    end
+    subgraph TCP["SDK ↔ Mock TCP server"]
+        T9["test_client<br/>timeouts, close, garbage, retries, estop"]
+    end
+    subgraph INT["Integration (FakeClock + Mock)"]
+        T10["test_integration_mock<br/>fault-injection matrix"]
+        T11["test_ros_node_stubbed<br/>stub rclpy"]
+        T12["test_tools"]
+    end
+    subgraph TODO["Not yet possible here"]
+        R1["colcon build + launch (ROS2 Jazzy)"]
+        R2["ros2_control C++ build"]
+        R3["hardware acceptance tests"]
+    end
+    UNIT --> INT
+    PROTO --> TCP --> INT
+    INT -.-> TODO

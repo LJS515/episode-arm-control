@@ -1,0 +1,10 @@
+<library path="episode_ros2_control">
+  <class name="episode_ros2_control/EpisodeSystemHardware"
+         type="episode_ros2_control::EpisodeSystemHardware"
+         base_class_type="hardware_interface::SystemInterface">
+    <description>
+      Episode 1 6-DOF arm SystemInterface (reference implementation).
+      Backends: mock | vendor_tcp (official upper computer, TCP/JSON).
+    </description>
+  </class>
+</library>

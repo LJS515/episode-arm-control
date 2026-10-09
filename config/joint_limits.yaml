@@ -1,0 +1,26 @@
+# Joint limits in MOTOR (physical) degrees, i.e. the coordinate used by
+# angle_mode / get_motor_angles. Evidence level per field in comments.
+# STATUS: physical ranges = B (official data supplied by project owner);
+#         soft margins / velocity caps = project defaults, NOT measured.
+joint_limits_deg:
+  - [0.0, 340.0]   # J1  B
+  - [0.0, 180.0]   # J2  B
+  - [0.0, 163.0]   # J3  B
+  - [0.0, 335.0]   # J4  B
+  - [0.0, 220.0]   # J5  B
+  - [0.0, 335.0]   # J6  B
+soft_margin_deg: 2.0          # project default (D), tighten/relax after hardware review
+# Historical DH qlim from the public client (C). J1/J4/J6 disagree with the
+# physical ranges above -> see docs/08_joint_coordinate_mapping.md
+vendor_dh_qlim_deg:
+  - [-180.0, 140.0]
+  - [0.0, 180.0]
+  - [-80.0, 83.0]
+  - [-30.0, 270.0]
+  - [-110.0, 110.0]
+  - [-30.0, 290.0]
+# Gear ratios from the historical client (C): [25, 20, 25, 10, 4, 1]
+# J5 ratio 4 matches a 15T->60T timing belt (BOM, C); J6 direct drive.
+gear_ratios: [25, 20, 25, 10, 4, 1]
+# Max joint speeds used by the MOCK only. Synthetic / Mock Data.
+mock_max_speed_deg_s: [60.0, 45.0, 60.0, 90.0, 90.0, 120.0]

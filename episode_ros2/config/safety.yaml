@@ -1,0 +1,6 @@
+# Safety-related overrides for episode_robot_interface.
+# Commissioning values (evidence D), not tuned values.
+episode_robot_interface:
+  ros__parameters:
+    speed_ratio_cap: 0.3
+    final_tolerance_deg: 1.0

@@ -1,0 +1,19 @@
+# Safety parameters (all project defaults, evidence D unless noted).
+# They are conservative COMMISSIONING values, not tuned values.
+safety:
+  soft_margin_deg: 2.0
+  speed_ratio_min: 0.01
+  speed_ratio_max: 1.0
+  speed_ratio_default_cap: 0.3     # first hardware runs: <= 0.3
+  max_consecutive_read_failures: 3
+  max_joint_step_deg: null         # e.g. 30.0 during commissioning
+  position_out_of_range_tolerance_deg: 3.0
+  final_tolerance_deg: 1.0         # TBD after repeatability measurement
+  settle_time_s: 0.3
+  motion_timeout_factor: 1.5
+  motion_timeout_margin_s: 2.0
+  stop_timeout_s: 2.0
+  homing_timeout_s: 60.0           # official calibration tool timeout (B, forum tid=1260)
+  require_homed: true
+  require_rehome_after_estop: true
+  vendor_stop_strategy: estop      # estop | hold_position (hold_position UNVERIFIED)

@@ -1,0 +1,5 @@
+-r requirements.txt
+pytest>=7.4
+# Optional, not required by the test suite:
+# ruff>=0.4        # lint
+# mypy>=1.8        # type checking

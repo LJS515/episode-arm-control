@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<!--
+  PLACEHOLDER kinematic URDF for exercising ros2_control with the MOCK backend.
+  It is NOT the official Episode 1 URDF (the official ROS2 package ships the real
+  URDF/SDF/STL). Geometry is a coarse stick model built from the public DH table
+  (evidence C); joint limits are the motor ranges mapped through the ros_model
+  mapping (evidence B; equal to the official URDF limits). Use the official URDF
+  (ros2_control/urdf/episode_official.urdf.xacro) for anything visual or real.
+-->
+<robot name="episode1_mock" xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:arg name="backend" default="mock"/>
+  <xacro:arg name="host" default="127.0.0.1"/>
+  <xacro:arg name="port" default="12345"/>
+  <xacro:include filename="$(find episode_ros2_control)/urdf/episode_ros2_control.xacro"/>
+
+  <xacro:property name="pi" value="3.141592653589793"/>
+  <xacro:macro name="stick" params="name length">
+    <link name="${name}">
+      <visual>
+        <origin xyz="0 0 ${length/2}"/>
+        <geometry><cylinder radius="0.02" length="${length}"/></geometry>
+      </visual>
+      <inertial><mass value="0.3"/><inertia ixx="1e-3" iyy="1e-3" izz="1e-3" ixy="0" ixz="0" iyz="0"/></inertial>
+    </link>
+  </xacro:macro>
+
+  <link name="world"/>
+  <xacro:stick name="base_link" length="0.166"/>
+  <xacro:stick name="link1" length="0.05"/>
+  <xacro:stick name="link2" length="0.200"/>
+  <xacro:stick name="link3" length="0.056"/>
+  <xacro:stick name="link4" length="0.192"/>
+  <xacro:stick name="link5" length="0.03"/>
+  <xacro:stick name="link6" length="0.055"/>
+
+  <joint name="world_fixed" type="fixed"><parent link="world"/><child link="base_link"/></joint>
+
+  <!-- limits in model radians = ros_model(motor range) -->
+  <joint name="joint1" type="revolute">
+    <parent link="base_link"/><child link="link1"/>
+    <origin xyz="0 0 0.166"/><axis xyz="0 0 1"/>
+    <limit lower="${-180*pi/180}" upper="${160*pi/180}" effort="10" velocity="1.0"/>
+  </joint>
+  <joint name="joint2" type="revolute">
+    <parent link="link1"/><child link="link2"/>
+    <origin xyz="0.055 0 0.05"/><axis xyz="0 1 0"/>
+    <limit lower="${-90*pi/180}" upper="${90*pi/180}" effort="10" velocity="1.0"/>
+  </joint>
+  <joint name="joint3" type="revolute">
+    <parent link="link2"/><child link="link3"/>
+    <origin xyz="0 0 0.200"/><axis xyz="0 1 0"/>
+    <limit lower="${-83*pi/180}" upper="${80*pi/180}" effort="10" velocity="1.0"/>
+  </joint>
+  <joint name="joint4" type="revolute">
+    <parent link="link3"/><child link="link4"/>
+    <origin xyz="0 0 0.056"/><axis xyz="0 0 1"/>
+    <limit lower="${-30*pi/180}" upper="${305*pi/180}" effort="5" velocity="1.5"/>
+  </joint>
+  <joint name="joint5" type="revolute">
+    <parent link="link4"/><child link="link5"/>
+    <origin xyz="0 0 0.192"/><axis xyz="0 1 0"/>
+    <limit lower="${-110*pi/180}" upper="${110*pi/180}" effort="5" velocity="1.5"/>
+  </joint>
+  <joint name="joint6" type="revolute">
+    <parent link="link5"/><child link="link6"/>
+    <origin xyz="0 0 0.03"/><axis xyz="0 0 1"/>
+    <limit lower="${-30*pi/180}" upper="${305*pi/180}" effort="2" velocity="2.0"/>
+  </joint>
+
+  <xacro:episode_ros2_control name="Episode1System" backend="$(arg backend)" host="$(arg host)" port="$(arg port)"/>
+</robot>

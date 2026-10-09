@@ -1,0 +1,24 @@
+%% Route A — Windows SDK path (official), with where this project hooks in
+sequenceDiagram
+    autonumber
+    participant U as User program (Python/C++)
+    participant S as episode_sdk (ours)
+    participant H as Official upper computer (Windows)
+    participant P as PCAN / USB2CAN
+    participant D as Joint drivers (FOC, vendor)
+
+    U->>S: angle_mode(q[6], speed_ratio)
+    Note over S: validate: 6 values, finite, limits, 0<ratio≤1
+    S->>H: [8 B length BE][{"action":"angle_mode","params":[[...],r]}]
+    H->>H: plan point-to-point move (vendor)
+    H->>P: CAN frames (IDs / rate: TBD, not documented)
+    P->>D: CAN
+    H-->>S: [8 B length][estimated_duration_s]  (reply ≠ completion)
+    S-->>U: MotionAck(estimated_duration_s)
+    loop until settled or timeout (ours)
+        S->>H: get_motor_angles
+        H->>P: request positions
+        D-->>P: encoder angles (motor side)
+        H-->>S: [q1..q6] (entries may be null)
+    end
+    Note over U,S: completion decided from measured feedback, not from sleep(estimate)

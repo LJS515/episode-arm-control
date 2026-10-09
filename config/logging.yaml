@@ -1,0 +1,27 @@
+version: 1
+disable_existing_loggers: false
+formatters:
+  plain:
+    format: "%(asctime)s.%(msecs)03d %(levelname)-7s %(name)s: %(message)s"
+    datefmt: "%H:%M:%S"
+  json:
+    (): episode_sdk.logging_config.JsonFormatter
+handlers:
+  console:
+    class: logging.StreamHandler
+    formatter: plain
+    level: INFO
+  file:
+    class: logging.handlers.RotatingFileHandler
+    formatter: json
+    filename: episode.log.jsonl
+    maxBytes: 5242880
+    backupCount: 3
+    level: DEBUG
+    delay: true
+loggers:
+  episode_sdk: {level: DEBUG}
+  episode_hardware: {level: DEBUG}
+root:
+  level: INFO
+  handlers: [console, file]
